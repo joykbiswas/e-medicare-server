@@ -1,0 +1,12 @@
+model OrderItem {
+  id         String   @id @default(uuid())
+  orderId    String
+  medicineId String
+  quantity   Int
+  price      Int
+
+  order      Order    @relation(fields: [orderId], references: [id])
+  medicine   Medicine @relation(fields: [medicineId], references: [id])
+
+  @@map("order_items")
+}

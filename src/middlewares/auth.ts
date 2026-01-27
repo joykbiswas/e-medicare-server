@@ -19,6 +19,11 @@ declare global {
                 email: string;
                 name: string;
                 role: string;
+                 phone?: string | null;
+        status?: string | null;
+        isBanned?: boolean;
+        createdAt?: Date;
+        updatedAt?: Date;
             }
         }
     }
@@ -81,26 +86,34 @@ export const fetchUserData = async (req: Request, res: Response, next: NextFunct
     }
 
     console.log("Fetching user data for userId:", req.user.id);
+
     const user = await prisma.user.findUnique({
       where: { id: req.user.id },
-      select: {
-        id: true,
-        name: true,
-        email: true,
-        role: true,
-      },
+      // select: {
+      //   id: true,
+      //   name: true,
+      //   email: true,
+      //   role: true,
+      //   phone: true,
+      //   status: true,
+      //   isBanned: true,
+
+      // } 
     });
 
     if (!user) {
-      console.log("User not found in database");
       return res.status(401).json({ success: false, message: "User not found" });
     }
 
-    console.log("User data fetched from database:", user);
+    // ❌ remove password before attaching
+    const { password, ...safeUser } = user;
+
     req.user = {
-      ...user,
-      role: user.role || "CUSTOMER",
+      ...safeUser,
+      role: safeUser.role || "CUSTOMER",
     };
+
+    console.log("Full user data attached to req.user:", req.user);
     next();
   } catch (error) {
     console.error("Error fetching user data:", error);

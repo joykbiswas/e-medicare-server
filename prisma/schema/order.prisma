@@ -1,0 +1,20 @@
+model Order {
+  id              String      @id @default(uuid())
+  customerId      String
+  status          OrderStatus @default(PLACED)
+  shippingAddress String
+  totalAmount     Int
+
+  customer        User        @relation(fields: [customerId], references: [id])
+  items           OrderItem[]
+
+  @@map("orders")
+}
+
+enum OrderStatus {
+  PLACED
+  PROCESSING
+  SHIPPED
+  DELIVERED
+  CANCELLED
+}

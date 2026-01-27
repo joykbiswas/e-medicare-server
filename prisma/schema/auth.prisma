@@ -3,9 +3,14 @@ model User {
   name      String
   email     String   @unique
   password  String
-  role      String?  @default("USER")
+  role      String?  @default("CUSTOMER")
   phone     String?
   status    String?  @default("ACTIVE")
+  isBanned  Boolean  @default(false)
+
+  order Order[]
+  medicine Medicine[]
+  reviews Review[]
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
