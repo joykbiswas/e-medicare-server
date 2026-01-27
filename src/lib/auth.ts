@@ -109,7 +109,7 @@ export const auth = betterAuth({
 
           <tr>
             <td style="padding:16px 32px; text-align:center; font-size:12px; color:#888888; background:#fafafa;">
-              © 2026 Prisma Blog — All rights reserved
+              © 2026 E-MediCare — All rights reserved
             </td>
           </tr>
         </table>
