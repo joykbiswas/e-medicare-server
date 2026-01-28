@@ -16,5 +16,8 @@ model Medicine {
   orderItems   OrderItem[]
   reviews      Review[]
 
+  createdAt    DateTime    @default(now())
+  updatedAt    DateTime    @updatedAt
+
   @@map("medicines")
 }

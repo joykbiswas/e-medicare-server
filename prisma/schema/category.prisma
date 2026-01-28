@@ -3,5 +3,8 @@ model Category {
   name      String     @unique
   medicines Medicine[]
 
+  createdAt DateTime   @default(now())
+  updatedAt DateTime   @updatedAt
+
   @@map("categories")
 }
