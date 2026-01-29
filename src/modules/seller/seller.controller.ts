@@ -1,6 +1,10 @@
 import { Request, Response } from "express";
 import { SellerService } from "./seller.service";
+import { OrderStatus } from "../../../generated/prisma/enums";
 
+interface UpdateOrderStatusPayload {
+  status: OrderStatus;
+}
 const updateMedicine = async (req: Request, res: Response) => {
   try {
     const sellerId = (req as any).user.userId;
@@ -42,30 +46,49 @@ const deleteMedicine = async (req: Request, res: Response) => {
 
 const getOrders = async (req: Request, res: Response) => {
   try {
-    const sellerId = (req as any).user.userId;
-    const orders = await SellerService.getSellerOrders(sellerId);
-    res.status(200).json({ success: true, data: orders });
+    const page = Number(req.query.page) || 1;
+    const limit = Number(req.query.limit) || 10;
+
+    const orders = await SellerService.getSellerOrders(page, limit);
+
+    res.status(200).json({
+      success: true,
+       ... orders,
+    });
   } catch (err: any) {
     res.status(400).json({ success: false, message: err.message });
   }
 };
 
+
 const updateOrderStatus = async (req: Request, res: Response) => {
   try {
     const sellerId = (req as any).user.userId;
     const { id } = req.params;
-    
+
     if (!id || typeof id !== "string") {
       return res.status(400).json({
         success: false,
-        message: "Invalid medicine id",
+        message: "Invalid order id",
       });
     }
-    
-    const order = await SellerService.updateOrderStatus(sellerId, id, req.body);
-    res.status(200).json({ success: true, data: order });
+
+    const { status } = req.body as UpdateOrderStatusPayload;
+
+    // ✅ Validate against Prisma enum values dynamically
+    const validStatuses = Object.values(OrderStatus);
+    if (!status || !validStatuses.includes(status)) {
+      return res.status(400).json({
+        success: false,
+        message: `Invalid status value. Allowed values: ${validStatuses.join(", ")}`,
+      });
+    }
+
+    const updatedOrder = await SellerService.updateOrderStatus( id, { status });
+
+    return res.status(200).json({ success: true, data: updatedOrder });
   } catch (err: any) {
-    res.status(400).json({ success: false, message: err.message });
+    return res.status(400).json({ success: false, message: err.message });
   }
 };
 

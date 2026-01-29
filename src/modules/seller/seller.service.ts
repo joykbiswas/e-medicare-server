@@ -37,34 +37,63 @@ const deleteMedicine = async (sellerId: string, medicineId: string) => {
   return prisma.medicine.delete({ where: { id: medicineId } });
 };
 
-const getSellerOrders = async (sellerId: string) => {
-  // get orders where at least one item belongs to this seller
-  return prisma.order.findMany({
-    where: {
-      items: { some: { medicine: { sellerId } } },
-    },
+const getSellerOrders = async (page: number, limit: number) => {
+  const skip = (page - 1) * limit;
+
+  const orders = await prisma.order.findMany({
+    skip,
+    take: limit,
+    orderBy: { createdAt: "desc" }, // latest orders first
     include: {
       items: { include: { medicine: true } },
       customer: { select: { id: true, name: true, email: true } },
     },
-   
   });
+
+  const total = await prisma.order.count();
+
+  return {
+    data: orders,
+    pagination: {
+      total,
+      page,
+      limit,
+      totalPages: Math.ceil(total / limit),
+    },
+  };
 };
 
-const updateOrderStatus = async (sellerId: string, orderId: string, payload: UpdateOrderStatusPayload) => {
+
+
+const updateOrderStatus = async (orderId: string, payload: UpdateOrderStatusPayload) => {
   const { status } = payload;
 
-  const order = await prisma.order.findFirst({
-    where: { id: orderId, items: { some: { medicine: { sellerId } } } },
-    include: { items: true },
+  console.log("Updating order:", orderId);
+  console.log("New status:", status);
+
+  // Validate status
+  const validStatuses = Object.values(OrderStatus);
+  if (!validStatuses.includes(status)) {
+    throw new Error(`Invalid status value. Allowed: ${validStatuses.join(", ")}`);
+  }
+
+  // Check if order exists
+  const order = await prisma.order.findUnique({
+    where: { id: orderId },
   });
 
-  if (!order) throw new Error("Order not found or does not belong to your medicines");
+  if (!order) {
+    throw new Error("Order not found");
+  }
 
-  return prisma.order.update({
+  // Update status only
+  const updatedOrder = await prisma.order.update({
     where: { id: orderId },
     data: { status },
   });
+
+  console.log("Order updated successfully:", updatedOrder.id);
+  return updatedOrder;
 };
 
 export const SellerService = {

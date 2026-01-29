@@ -11,8 +11,8 @@ router.put("/medicines/:id", auth(UserRole.SELLER), SellerController.updateMedic
 router.delete("/medicines/:id", auth(UserRole.SELLER), SellerController.deleteMedicine);
 router.get("/medicines", auth(UserRole.SELLER), MedicineController.getAllMedicines);
 
-// // Seller orders management
-// router.get("/orders", auth(UserRole.SELLER), SellerController.getOrders);
-// router.patch("/orders/:id", auth(UserRole.SELLER), SellerController.updateOrderStatus);
+// Seller orders management
+router.get("/orders", auth(UserRole.SELLER), SellerController.getOrders);
+router.patch("/orders/:id", auth(UserRole.SELLER), SellerController.updateOrderStatus);
 
 export const SellerRoutes = router;
