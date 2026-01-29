@@ -16,13 +16,30 @@ const createMedicine = async (
   return result;
 };
 
-const getAllMedicines = async () => {
-  return prisma.medicine.findMany({
+const getAllMedicines = async ({
+  page,
+  limit,
+  skip,
+  sortBy,
+  sortOrder,
+}: {
+  page: number;
+  limit: number;
+  skip: number;
+  sortBy: string;
+  sortOrder: string;
+}) => {
+  return prisma.medicine.findMany({ 
     include: {
       category: true,
       seller: {
         select: { id: true, name: true },
       },
+    },
+    take: limit,
+    skip,
+    orderBy: {
+      [sortBy]: sortOrder,
     },
   });
 };

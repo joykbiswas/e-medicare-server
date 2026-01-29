@@ -1,5 +1,6 @@
 import { NextFunction, Request, Response } from "express";
 import { MedicineService } from "./medicine.service";
+import sortingHelper from "../../helpers/sortingHelper";
 
 const createMedicine = async (
   req: Request,
@@ -14,7 +15,10 @@ const createMedicine = async (
         error: "Unauthorized",
       });
     }
-    const result = await MedicineService.createMedicine(req.body, user.id as string);
+    const result = await MedicineService.createMedicine(
+      req.body,
+      user.id as string,
+    );
 
     res.status(201).json({
       success: true,
@@ -25,14 +29,21 @@ const createMedicine = async (
   }
 };
 
-const getAllMedicines = async (_req: Request, res: Response) => {
+const getAllMedicines = async (req: Request, res: Response) => {
   try {
-    const result = await MedicineService.getAllMedicines();
+    const { page, limit, skip, sortBy, sortOrder } = sortingHelper(req.query);
+    const result = await MedicineService.getAllMedicines({
+      page,
+      limit,
+      skip,
+      sortBy,
+      sortOrder,
+    });
 
-  res.status(200).json({
-    success: true,
-    data: result,
-  });
+    res.status(200).json({
+      success: true,
+      data: result,
+    });
   } catch (error) {
     res.status(400).json({
       error: "Medicine found failed!",
@@ -62,7 +73,7 @@ const getMedicineById = async (req: Request, res: Response) => {
   } catch (error) {
     res.status(400).json({
       error: "Medicine found failed",
-      details: error
+      details: error,
     });
   }
 };

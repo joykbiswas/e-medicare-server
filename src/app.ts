@@ -10,6 +10,7 @@ import { MedicineRoutes } from "./modules/medicine/medicine.route";
 import { CategoryRoutes } from "./modules/category/category.route";
 import { OrderRoutes } from "./modules/order/order.route";
 import { ReviewRoutes } from "./modules/review/review.router";
+import { SellerRoutes } from "./modules/seller/seller.route";
 const app: Application = express();
 
 app.use(
@@ -29,7 +30,7 @@ app.use("/api/categories", CategoryRoutes);
 app.use("/api/medicines", MedicineRoutes);
 
 app.use("/api/orders", OrderRoutes);
-// app.use("/api/seller", SellerRoutes);
+app.use("/api/seller", SellerRoutes);
 // app.use("/api/admin", AdminRoutes);
 app.use("/api/reviews", ReviewRoutes);
 
