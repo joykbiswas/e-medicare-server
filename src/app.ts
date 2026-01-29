@@ -11,6 +11,7 @@ import { CategoryRoutes } from "./modules/category/category.route";
 import { OrderRoutes } from "./modules/order/order.route";
 import { ReviewRoutes } from "./modules/review/review.router";
 import { SellerRoutes } from "./modules/seller/seller.route";
+import { AdminRoutes } from "./modules/admin/admin.route";
 const app: Application = express();
 
 app.use(
@@ -31,7 +32,7 @@ app.use("/api/medicines", MedicineRoutes);
 
 app.use("/api/orders", OrderRoutes);
 app.use("/api/seller", SellerRoutes);
-// app.use("/api/admin", AdminRoutes);
+app.use("/api/admin", AdminRoutes);
 app.use("/api/reviews", ReviewRoutes);
 
 // app.all("/api/auth/*splat", toNodeHandler(auth));
