@@ -29,10 +29,37 @@ const createMedicine = async (
   }
 };
 
+// const getAllMedicines = async (req: Request, res: Response) => {
+//   try {
+//     const { page, limit, skip, sortBy, sortOrder } = sortingHelper(req.query);
+//     const result = await MedicineService.getAllMedicines({
+//       page,
+//       limit,
+//       skip,
+//       sortBy,
+//       sortOrder,
+//     });
+
+//     res.status(200).json({
+//       success: true,
+//       data: result,
+//     });
+//   } catch (error) {
+//     res.status(400).json({
+//       error: "Medicine found failed!",
+//       details: error,
+//     });
+//   }
+// };
+
 const getAllMedicines = async (req: Request, res: Response) => {
   try {
     const { page, limit, skip, sortBy, sortOrder } = sortingHelper(req.query);
+
     const result = await MedicineService.getAllMedicines({
+      search: req.query.search as string,
+      categoryId: req.query.categoryId as string,
+      sellerId: req.query.sellerId as string,
       page,
       limit,
       skip,
@@ -42,15 +69,17 @@ const getAllMedicines = async (req: Request, res: Response) => {
 
     res.status(200).json({
       success: true,
-      data: result,
+      ...result,
     });
   } catch (error) {
     res.status(400).json({
-      error: "Medicine found failed!",
-      details: error,
+      success: false,
+      message: "Failed to fetch medicines",
+      error,
     });
   }
 };
+
 
 // TODo: search by name, category
 const getMedicineById = async (req: Request, res: Response) => {

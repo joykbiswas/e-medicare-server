@@ -4,6 +4,8 @@ model Order {
   status          OrderStatus @default(PLACED)
   shippingAddress String
   totalAmount     Int
+  createdAt       DateTime    @default(now())
+  updatedAt       DateTime    @updatedAt
 
   customer        User        @relation(fields: [customerId], references: [id])
   items           OrderItem[]

@@ -27,21 +27,39 @@ const createOrder = async (req: Request, res: Response) => {
 const getMyOrders = async (req: Request, res: Response) => {
   try {
     const userId = (req as any).user?.userId;
-    const { sortBy, sortOrder } = sortingHelper(req.query);
 
-    const result = await OrderService.getMyOrders(userId);
+    if (!userId) {
+      return res.status(401).json({
+        success: false,
+        message: "Unauthorized",
+      });
+    }
+
+    const { page, limit, skip } = sortingHelper(req.query);
+
+    const result = await OrderService.getMyOrders({
+      userId,
+      page,
+      limit,
+      skip,
+    });
 
     res.status(200).json({
       success: true,
-      data: result,
+      ...result,
     });
   } catch (error) {
+    console.error(error); // 👈 keep this for debugging
+
     res.status(400).json({
-      error: "Order found failed !",
-      details: error,
+      success: false,
+      message: "Order fetch failed!",
+      error,
     });
   }
 };
+
+
 
 const getOrderById = async (req: Request, res: Response) => {
   const userId = (req as any).user?.userId;

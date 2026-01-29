@@ -3,6 +3,15 @@
 import { OrderStatus } from "../../../generated/prisma/enums";
 import { prisma } from "../../lib/prisma";
 
+const ORDER_SORT_FIELDS = {
+  createdAt: true,
+  totalAmount: true,
+  status: true,
+} as const;
+
+type OrderSortField = keyof typeof ORDER_SORT_FIELDS;
+
+
 const createOrder = async (userId: string, payload: any) => {
   const { items, shippingAddress } = payload;
 
@@ -61,21 +70,50 @@ const createOrder = async (userId: string, payload: any) => {
   });
 };
 
-
-
-const getMyOrders = async (userId: string) => {
-  return prisma.order.findMany({
-    where: { customerId: userId },
+const getMyOrders = async ({
+  userId,
+  page,
+  limit,
+  skip,
+}: {
+  userId: string;
+  page: number;
+  limit: number;
+  skip: number;
+}) => {
+  const orders = await prisma.order.findMany({
+    where: {
+      customerId: userId,
+    },
+    take: limit,
+    skip,
     include: {
       items: {
         include: {
-          medicine: true
-        }
-      }
+          medicine: true,
+        },
+      },
     },
-    
   });
+
+  const total = await prisma.order.count({
+    where: {
+      customerId: userId,
+    },
+  });
+
+  return {
+    data: orders,
+    pagination: {
+      total,
+      page,
+      limit,
+      totalPages: Math.ceil(total / limit),
+    },
+  };
 };
+
+
 
 const getOrderById = async (orderId: string, userId: string) => {
   return prisma.order.findFirst({
