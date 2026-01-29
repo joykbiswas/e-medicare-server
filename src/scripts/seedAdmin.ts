@@ -1,53 +1,48 @@
 import { prisma } from "../lib/prisma";
-import { UserRole } from "../middlewares/auth";
+import bcrypt from "bcrypt";
 
 async function seedAdmin() {
   try {
-    console.log("**** Admin Seeding State ****");
+    console.log("**** Admin Seeding Start ****");
+
     const adminData = {
       name: "Admin",
       email: "admin@test.com",
-      role: UserRole.ADMIN,
       password: "admin1234",
-      emailVerified: true
+      role: "ADMIN",
+      phone: "01740002281",
     };
-    console.log("** Checking User Exist or not");
-    // check user existing user or not
+
+    console.log("** Checking admin exists...");
+
     const existingUser = await prisma.user.findUnique({
-      where: {
-        email: adminData.email,
-      },
+      where: { email: adminData.email },
     });
 
     if (existingUser) {
-      throw new Error("User already exist !");
+      console.log("⚠️ Admin already exists");
+      return;
     }
 
-    const signUpAdmin = await fetch(
-      "http://localhost:5000/api/auth/sign-up/email",
-      {
-        method: "POST",
-        headers: { "Content-Type": "application/json",
-            "Origin": "http://localhost:4000"
-         },
-        body: JSON.stringify(adminData),
-      }
-    );
+    const hashedPassword = await bcrypt.hash(adminData.password, 10);
 
-    if(signUpAdmin.ok){
-        console.log("**** Admin create **** ");
-        await prisma.user.update({
-            where:{
-                email: adminData.email
-            },
-            data:{
-                emailVerified: true
-            }
-        })
-        console.log("**** Email Verify status update");
-    }
+    await prisma.user.create({
+      data: {
+        name: adminData.name,
+        email: adminData.email,
+        password: hashedPassword,
+        role: adminData.role,
+        phone: adminData.phone,
+        status: "ACTIVE",
+        isBanned: false,
+      },
+    });
+
+    console.log("✅ Admin created successfully");
   } catch (error) {
-    console.error(error);
+    console.error("❌ Admin seeding failed:", error);
+  } finally {
+    await prisma.$disconnect();
   }
 }
 
