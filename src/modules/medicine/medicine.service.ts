@@ -8,15 +8,16 @@ const createMedicine = async (
   data: Omit<Medicine, "id" | "createdAt" | "updatedAt">,
   userId: string
 ) => {
+  const { sellerId, ...restData } = data; // Extract sellerId if present
+  console.log("sellerId: ",sellerId);
   const result = await prisma.medicine.create({
     data: {
       ...data,
-      authorId: userId,
+      // authorId: userId,
     },
   });
   return result;
-};
-
+}
 // const getAllMedicines = async ({
 //   page,
 //   limit,
@@ -118,6 +119,7 @@ const getAllMedicines = async ({
           name: true,
         },
       },
+      reviews: true,
     },
   });
 

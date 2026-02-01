@@ -105,3 +105,28 @@ export const me = async (req: Request, res: Response) => {
   res.status(200).json({ success: true, data: req.user });
 
 };
+
+export const logout = async (req: Request, res: Response, next: NextFunction) => {
+  try {
+    // Clear the token cookie
+    res.clearCookie("token", {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === "production",
+      sameSite: "lax",
+      // Note: You can add path if you set it during creation
+      // path: "/",
+    });
+
+    // Optional: Also clear any other auth cookies you might have
+    // res.clearCookie("refreshToken", { ... });
+
+    console.log("Logout successful");
+    res.status(200).json({
+      success: true,
+      message: "Logged out successfully",
+    });
+  } catch (error) {
+    console.error("Logout error:", error);
+    next(error);
+  }
+};
