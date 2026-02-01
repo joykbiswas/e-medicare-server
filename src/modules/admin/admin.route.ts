@@ -14,8 +14,11 @@ const router = express.Router();
 router.get("/users", auth(UserRole.ADMIN), AdminController.getAllUsers);
 router.get("/medicines", auth(UserRole.ADMIN), MedicineController.getAllMedicines);
 router.get("/orders", auth(UserRole.ADMIN), AdminController.getAllOrders);
+// category
+router.post("/categories", auth(UserRole.ADMIN), CategoryController.createCategory);
 router.get("/categories", auth(UserRole.ADMIN), CategoryController.getAllCategories);
 router.patch("/categories/:id",  auth(UserRole.ADMIN), AdminController.updateCategory);
+router.delete("/categories/:id", auth(UserRole.ADMIN), CategoryController.deleteCategory);
 
 // PATCH /api/admin/users/:id
 router.patch("/users/:id", AdminController.updateUserStatus);

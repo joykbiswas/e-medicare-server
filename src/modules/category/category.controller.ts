@@ -65,9 +65,56 @@ const getCategoryById = async (req: Request, res: Response) => {
     });
   }
 };
+const deleteCategory = async (req: Request, res: Response) => {
+  try {
+    const { id } = req.params;
+
+    if (!id || typeof id !== "string") {
+      return res.status(400).json({
+        success: false,
+        message: "Invalid category id",
+      });
+    }
+
+    // Check if category exists
+    const existingCategory = await CategoryService.getCategoryById(id);
+    if (!existingCategory) {
+      return res.status(404).json({
+        success: false,
+        message: "Category not found",
+      });
+    }
+
+    // Check if category has medicines
+    if (existingCategory.medicines && existingCategory.medicines.length > 0) {
+      return res.status(400).json({
+        success: false,
+        message: "Cannot delete category with associated medicines. Remove or reassign medicines first.",
+      });
+    }
+
+    // Delete the category
+    const result = await CategoryService.deleteCategory(id);
+
+    res.status(200).json({
+      success: true,
+      message: "Category deleted successfully",
+      data: result,
+    });
+  } catch (error) {
+    console.error("Delete category error:", error);
+    res.status(500).json({
+      success: false,
+      error: "Failed to delete category",
+      details: error instanceof Error ? error.message : "Unknown error",
+    });
+  }
+};
+
 
 export const CategoryController = {
   createCategory,
   getAllCategories,
   getCategoryById,
+  deleteCategory,
 };
