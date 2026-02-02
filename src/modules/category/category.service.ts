@@ -1,4 +1,3 @@
-// import { prisma } from "../../prisma/prismaClient";
 
 import { prisma } from "../../lib/prisma";
 

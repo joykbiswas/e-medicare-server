@@ -9,7 +9,6 @@ const createMedicine = async (
 ) => {
   try {
     const user = req.user;
-    console.log("User:", user);
     if (!user) {
       return res.status(400).json({
         error: "Unauthorized",
@@ -29,28 +28,7 @@ const createMedicine = async (
   }
 };
 
-// const getAllMedicines = async (req: Request, res: Response) => {
-//   try {
-//     const { page, limit, skip, sortBy, sortOrder } = sortingHelper(req.query);
-//     const result = await MedicineService.getAllMedicines({
-//       page,
-//       limit,
-//       skip,
-//       sortBy,
-//       sortOrder,
-//     });
 
-//     res.status(200).json({
-//       success: true,
-//       data: result,
-//     });
-//   } catch (error) {
-//     res.status(400).json({
-//       error: "Medicine found failed!",
-//       details: error,
-//     });
-//   }
-// };
 
 const getAllMedicines = async (req: Request, res: Response) => {
   try {

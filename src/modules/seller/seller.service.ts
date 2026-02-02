@@ -18,9 +18,6 @@ const updateMedicine = async (sellerId: string, medicineId: string, payload: Par
   const medicine = await prisma.medicine.findUnique({ where: { id: medicineId } });
 
   if (!medicine) throw new Error("Medicine not found");
-  console.log("match: ",medicine );
-  console.log("match2: ",medicine.sellerId );
-//   if (medicine.sellerId !== sellerId) throw new Error("You cannot update this medicine");
 
   return prisma.medicine.update({
     where: { id: medicineId },
@@ -68,9 +65,6 @@ const getSellerOrders = async (page: number, limit: number) => {
 const updateOrderStatus = async (orderId: string, payload: UpdateOrderStatusPayload) => {
   const { status } = payload;
 
-  console.log("Updating order:", orderId);
-  console.log("New status:", status);
-
   // Validate status
   const validStatuses = Object.values(OrderStatus);
   if (!validStatuses.includes(status)) {
@@ -92,7 +86,6 @@ const updateOrderStatus = async (orderId: string, payload: UpdateOrderStatusPayl
     data: { status },
   });
 
-  console.log("Order updated successfully:", updatedOrder.id);
   return updatedOrder;
 };
 

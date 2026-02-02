@@ -53,9 +53,6 @@ const auth = (...roles: UserRole[]) => {
         process.env.JWT_SECRET as string
       ) as JwtPayload;
 
-      console.log("🔐 Auth Middleware - Decoded JWT:", decoded);
-      console.log("🔐 Auth Middleware - Required roles:", roles);
-      console.log("🔐 Auth Middleware - User role:", decoded.role);
 
       // attach user
       req.user = {
@@ -71,7 +68,6 @@ const auth = (...roles: UserRole[]) => {
         });
       }
 
-      console.log("✅ Authorization successful");
       next();
     } catch (error) {
       console.error("❌ Token verification failed:", error);
@@ -94,8 +90,7 @@ export const protect = (req: Request, res: Response, next: NextFunction) => {
   if (!token && req.headers.authorization) {
     const authHeader = req.headers.authorization;
     if (authHeader.startsWith("Bearer ")) {
-      token = authHeader.slice(7); // Remove "Bearer " prefix
-      console.log("Token found in Authorization header");
+      token = authHeader.slice(7); 
     }
   }
 
@@ -107,7 +102,6 @@ export const protect = (req: Request, res: Response, next: NextFunction) => {
   }
 
   try {
-    console.log("Verifying token...");
     const decoded = jwt.verify(
       token,
       process.env.JWT_SECRET as string,
@@ -120,7 +114,7 @@ export const protect = (req: Request, res: Response, next: NextFunction) => {
       userId: decoded.userId,
       role: decoded.role || "USER",
     };
-    console.log("User set in request:", req.user);
+    
     next();
   } catch (error) {
     console.error("Token verification failed:", error);

@@ -23,7 +23,6 @@ export const register = async (req: Request, res: Response, next: NextFunction) 
     const user = await prisma.user.create({
       data: { name, email, password: hashedPassword,  phone },
     });
-    console.log("User created:", user.email);
 
     const token = signToken({ userId: user.id, role: user.role });
     console.log("Token created:", token);
