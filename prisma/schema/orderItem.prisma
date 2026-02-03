@@ -6,7 +6,7 @@ model OrderItem {
   price      Int
 
   order      Order    @relation(fields: [orderId], references: [id])
-  medicine   Medicine @relation(fields: [medicineId], references: [id])
+  medicine   Medicine @relation(fields: [medicineId], references: [id], onDelete: Cascade)
 
   @@map("order_items")
 }
